@@ -11,6 +11,7 @@ client = discord.Client()
 @client.event
 async def on_message(message):
   roles = [role.name for role in message.author.roles]
+  print(roles)
   if message.content.startswith("OFFICIAL PROPOSAL:"):
 
     # Check if author is part of the Imperial Senate
@@ -23,7 +24,9 @@ async def on_message(message):
 async def on_reaction_add(reaction, user):
   if reaction.message.content.startswith("OFFICIAL PROPOSAL:"):
     # Check if author is part of the Imperial Senate
-    if 'ImperialSenator' in reaction.message.author.roles or 'Emperor' in reaction.message.author.roles:
+    roles = [role.name for role in reaction.message.author.roles]
+    print(roles)
+    if 'ImperialSenator' in roles or 'Emperor' in roles:
       if '️⬆' in str(reaction.emoji):
         print("GREAT")
         print(reaction.count)
