@@ -28,9 +28,8 @@ async def on_reaction_add(reaction, user):
     print(roles)
     if 'ImperialSenator' in roles or 'Emperor' in roles:
       if '️⬆' in str(reaction.emoji):
-        print("GREAT")
-        print(reaction.count)
+        await reaction.message.reply(content=f"GREAT {reaction.count}")
       else:
-        print(reaction.emoji)
+        await reaction.message.reply(content=reaction.emoji)
 
 client.run(TOKEN)
