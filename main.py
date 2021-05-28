@@ -14,7 +14,7 @@ async def on_message(message):
     # Check if member is a senator
     if 'ImperialSenator' not in message.author.roles and 'Emperor' not in message.author.roles:
       # Reject the Message
-      message.reply(content="You are not an Imperial Senator, so your proposal is immediately rejected.")
+      await message.reply(content="You are not an Imperial Senator, so your proposal is immediately rejected.")
       pass
     pass
 
