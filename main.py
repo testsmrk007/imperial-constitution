@@ -5,16 +5,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-GUILD = os.getenv('DISCORD_GUILD')
 
 client = discord.Client()
 
 @client.event
-async def on_ready():
-    guild = discord.utils.get(client.guilds, name=GUILD)
-    print(
-        f'{client.user} is connected to the following guild:\n'
-        f'{guild.name}(id: {guild.id})'
-    )
+async def on_message(message):
+  if message.content.startswith("OFFICIAL PROPOSAL:"):
+    # Check if member is a senator
+    if 'ImperialSenator' not in message.author.roles:
+      # Reject the Message
+      message.reply(content="You are not an Imperial Senator, so your proposal is immediately rejected.")
+      pass
+    pass
 
 client.run(TOKEN)
