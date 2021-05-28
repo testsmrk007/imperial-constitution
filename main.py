@@ -10,6 +10,7 @@ client = discord.Client()
 
 @client.event
 async def on_message(message):
+  print(message.author.roles)
   if message.content.startswith("OFFICIAL PROPOSAL:"):
 
     # Check if author is part of the Imperial Senate
