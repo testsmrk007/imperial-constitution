@@ -10,11 +10,11 @@ client = discord.Client()
 
 @client.event
 async def on_message(message):
-  print(message.author.roles)
+  roles = [role.name for role in message.author.roles]
   if message.content.startswith("OFFICIAL PROPOSAL:"):
 
     # Check if author is part of the Imperial Senate
-    if 'ImperialSenator' not in message.author.roles and 'Emperor' not in message.author.roles:
+    if 'ImperialSenator' not in roles and 'Emperor' not in roles:
       # Reject the Message
       await message.reply(content="You are not an Imperial Senator, so your proposal is immediately rejected.")
       return
