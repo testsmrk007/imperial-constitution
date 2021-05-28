@@ -20,9 +20,9 @@ async def on_message(message):
 
 @client.event
 async def on_reaction_add(reaction, user):
-  if message.content.startswith("OFFICIAL PROPOSAL:"):
+  if reaction.message.content.startswith("OFFICIAL PROPOSAL:"):
     # Check if author is part of the Imperial Senate
-    if 'ImperialSenator' in message.author.roles 'Emperor' in message.author.roles:
+    if 'ImperialSenator' in reaction.message.author.roles or 'Emperor' in reaction.message.author.roles:
       if reaction.emoji == '️⬆️':
         print("GREAT")
         print(reaction.count)
