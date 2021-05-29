@@ -5,6 +5,7 @@ from discord.ext.commands import *
 from discord.ext import commands
 from dotenv import load_dotenv
 import subprocess
+import re
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
