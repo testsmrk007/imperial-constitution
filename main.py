@@ -1,14 +1,16 @@
 import os
 
 import discord
+from discord.ext.commands import *
+from discord.ext import commands
 from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-client = discord.Client()
+bot = commands.Bot(command_prefix="IMPERIAL")
 
-@client.event
+@bot.event
 async def on_message(message):
   roles = [role.name for role in message.author.roles]
   print(roles)
@@ -20,7 +22,7 @@ async def on_message(message):
       await message.reply(content="You are not an Imperial Senator, so your proposal is immediately rejected.")
       return
 
-@client.event
+@bot.event
 async def on_reaction_add(reaction, user):
   if reaction.message.content.startswith("OFFICIAL PROPOSAL:"):
     # Check if author is part of the Imperial Senate
@@ -32,4 +34,4 @@ async def on_reaction_add(reaction, user):
       else:
         await reaction.message.reply(content=reaction.emoji)
 
-client.run(TOKEN)
+bot.run(TOKEN)
