@@ -24,7 +24,7 @@ async def on_message(message):
       
   test1_search = re.search('TEST1',message.content)
   if test1_search:
-    await message.reply(content="Hello")
+    await message.reply(content="Goodbye")
     return
 
   if message.content.startswith("OFFICIAL PROPOSAL:"):
