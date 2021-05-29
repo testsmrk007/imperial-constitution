@@ -4,6 +4,7 @@ import discord
 from discord.ext.commands import *
 from discord.ext import commands
 from dotenv import load_dotenv
+import subprocess
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -14,6 +15,11 @@ bot = commands.Bot(command_prefix="IMPERIAL")
 async def on_message(message):
   roles = [role.name for role in message.author.roles]
   print(roles)
+
+  restart_search = re.search('RESTART: (.+)',message.content)
+  if restart_search:
+      subprocess.call(['bash','acceptAmendment.sh',restart_search.group(1)])
+
   if message.content.startswith("OFFICIAL PROPOSAL:"):
 
     # Check if author is part of the Imperial Senate
