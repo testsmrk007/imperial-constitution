@@ -19,9 +19,10 @@ async def on_message(message):
 
   restart_search = re.search('RESTART: (.+)',message.content)
   if restart_search:
-      subprocess.call(['bash','acceptAmendment.sh',restart_search.group(1)])
+      subprocess.call(['bash','acceptAmendment.sh',restart_search.group(1),'&'])
+      exit()
       
-  test1_search = re.search('TEST1')
+  test1_search = re.search('TEST1',message.content)
   if test1_search:
     await message.reply(content="Hello")
     return
