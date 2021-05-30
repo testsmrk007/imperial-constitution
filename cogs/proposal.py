@@ -88,7 +88,8 @@ class Proposal(commands.Cog):
 
         # Check if proposition is valid
         subprocess.call(['git','fetch'])
-        branches = subprocess.check_output(['git', 'branch', '-r']).decode().split('\n')
+        branches = [branch.lstrip() for branch in subprocess.check_output(['git', 'branch', '-r']).decode().split('\n')]
+        print(branches)
 
         if f'origin/{proposition}' not in branches:
             await ctx.message.reply(content='The proposition presented is invalid.\n' +
