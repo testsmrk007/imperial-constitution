@@ -28,7 +28,6 @@ async def getSenateSupportCount(reaction):
 
 def getTotalSenators(reaction):
     senators = [*filter(isSenator,reaction.message.channel.members)]
-    print(reaction.message.channel.members)
     return len(senators)
 
 async def getEmperorSupport(reaction):
