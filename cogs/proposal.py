@@ -135,7 +135,7 @@ class Proposal(commands.Cog):
 
         await ctx.message.reply(content=f'Proposal #{ctx.message.id} has been ' +
                 'added :white_check_mark:: make amendment ' +
-                f'{proposal_url}/{proposal_branch}.')
+                f'{proposal_url}/tree/{proposal_branch}.')
 
     async def _load_reaction_data(self, payload):
         emoji = getEmojiName(payload.emoji)
@@ -183,9 +183,7 @@ class Proposal(commands.Cog):
                     message.reactions)
 
         # We could not find any up-arrows so return out
-        if reaction == None:
-            await message.reply(content='No votes for proposal')
-            return
+        if reaction == None: return
 
         if isUpArrow(reaction.emoji):
             # Check if there is a super majority of senators who have voted
