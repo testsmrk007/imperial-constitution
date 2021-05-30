@@ -41,16 +41,16 @@ def isEmperor(user):
 async def getSenateSupportCount(reaction):
     # Assume reaction is upvote
     users = await reaction.users().flatten()
-    votes = filter(isSenator,users)
+    votes = [*filter(isSenator,users)]
     return len(votes)
 
 def getTotalSenators(reaction):
-    senators = filter(isSenator,reaction.message.channel.members)
+    senators = [*filter(isSenator,reaction.message.channel.members)]
     return len(senators)
 
 async def getEmperorSupport(reaction):
     users = await reaction.users().flatten()
-    votes = filter(isEmperor,users)
+    votes = [*filter(isEmperor,users)]
     return len(votes)>0
 
 @bot.event
