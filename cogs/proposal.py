@@ -199,11 +199,13 @@ class Proposal(commands.Cog):
                     "with support from the emperor and has passed.")
                 self.passProposal(self.proposals[str(message.id)],message)
                 self.proposals.pop(str(message.id))
+                self.writeProposals()
             elif not emperorSupport and ( percentSupport > 66 ):
                 await message.reply(content=f"This proposal has received {percentSupport}% support " +
                     "without support from the emperor and has passed.")
                 self.passProposal(self.proposals[str(message.id)],message)
                 self.proposals.pop(str(message.id))
+                self.writeProposals()
         else:
             return
 
