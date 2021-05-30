@@ -1,77 +1,61 @@
 import os
-
+import logging as log
 import discord
 from discord.ext.commands import *
 from discord.ext import commands
 import subprocess
+import traceback
 import re
 from auth import DISCORD_TOKEN
+from trim import trim_nl
 
-bot = commands.Bot(command_prefix="IMPERIAL")
+extensions = []
+
+bot = commands.Bot(command_prefix=">", intents=discord.Intents.all())
 
 @bot.event
 async def on_message(message):
-  roles = [role.name for role in message.author.roles]
-  print(roles)
-
-  restart_search = re.search('RESTART: (.+)',message.content)
-  if restart_search:
-      subprocess.call(['bash','acceptAmendment.sh',restart_search.group(1),'&'])
-      exit()
-      
-  test1_search = re.search('TEST1',message.content)
-  if test1_search:
-    await message.reply(content="I can be updated now")
-    return
-
-  if message.content.startswith("OFFICIAL PROPOSAL:"):
-
-    # Check if author is part of the Imperial Senate
-    if 'ImperialSenator' not in roles and 'Emperor' not in roles:
-      # Reject the Message
-      await message.reply(content="You are not an Imperial Senator, so your proposal is immediately rejected.")
-      return
-
-def isSenator(user):
-    return 'ImperialSenator' in user.roles
-
-def isEmperor(user):
-    return 'Emperor' in user.roles
-
-async def getSenateSupportCount(reaction):
-    # Assume reaction is upvote
-    senators_ids = set([member.id for member in filter(isSenator,reaction.message.channel.members)])
-    users = await reaction.users().flatten()
-    user_ids = set([user.id for user in users])
-    senate_votes = senators_ids & user_ids
-    return len(votes)
-
-def getTotalSenators(reaction):
-    senators = [*filter(isSenator,reaction.message.channel.members)]
-    return len(senators)
-
-async def getEmperorSupport(reaction):
-    users = await reaction.users().flatten()
-    votes = [*filter(isEmperor,users)]
-    return len(votes)>0
+    await bot.process_commands(message)
 
 @bot.event
-async def on_reaction_add(reaction, user):
-  if reaction.message.content.startswith("OFFICIAL PROPOSAL:"):
-    # Check if author is part of the Imperial Senate
-    roles = [role.name for role in reaction.message.author.roles]
-    print(roles)
-    if 'ImperialSenator' in roles or 'Emperor' in roles:
-      byteString = b'\xe2\xac\x86\xef\xb8\x8f'
-      actualString = bytes(str(reaction.emoji),'utf-8')
-      if actualString == byteString:
-        # Check if there is a super majority of senators who have voted
-        # Or if emperor + simple majority
-        senatorSupportCount = await getSenateSupportCount(reaction)
-        totalSenators = getTotalSenators(reaction)
-        emperorSupport = await getEmperorSupport(reaction)
-        await reaction.message.reply(content=f"Senate support: {senatorSupportCount}\nTotal senators: {totalSenators}\nEmperor support: {emperorSupport}")
-      else:
-        await reaction.message.reply(content=reaction.emoji)
+async def on_error(evt_type, *args, **kwargs):
+    if evt_type == 'on_message':
+        await args[0].send('An error has occurred... :disappointed:')
+    log.error(f'Ignoring exception at {evt_type}')
+    log.error(traceback.format_exc())
 
-bot.run(DISCORD_TOKEN)
+
+@bot.event
+async def on_command_error(ctx, err):
+    if isinstance(err, MissingPermissions):
+        await ctx.send('You do not have permission to do that! ¯\_(ツ)_/¯')
+    elif isinstance(err, MissingRequiredArgument):
+        await ctx.send(':bangbang: Missing arguments to command');
+    elif isinstance(err, BotMissingPermissions):
+        await ctx.send(trim_nl(f''':cry: I can\'t do that. Please ask server ops
+        to add all the permission for me!
+
+        ```{str(err)}```'''))
+    elif isinstance(err, DisabledCommand):
+        await ctx.send(':skull: Command has been disabled!')
+    elif isinstance(err, CommandNotFound):
+        await ctx.send(f'Invalid command passed. Use {bot.command_prefix}help.')
+    elif isinstance(err, NoPrivateMessage):
+        await ctx.send(':bangbang: This command cannot be used in PMs.')
+    else:
+        await ctx.send('An error has occurred... :disappointed:')
+        log.error(f'Ignoring exception in command {ctx.command}')
+        log.error(''.join(traceback.format_exception(type(err), err,
+                err.__traceback__)))
+
+if __name__ == '__main__':
+    for extension in os.listdir('cogs'):
+        if extension.endswith('.py'):
+            extension = extension[:-3]
+        else:
+            continue
+        print(f'Loading cog {extension}')
+        bot.load_extension('cogs.' + extension)
+
+    print("Starting bot...")
+    bot.run(DISCORD_TOKEN)
