@@ -8,14 +8,29 @@ import traceback
 import re
 from auth import DISCORD_TOKEN
 from trim import trim_nl
+import json
 
 extensions = []
 
 bot = commands.Bot(command_prefix=">", intents=discord.Intents.all())
 
+def readBans(self):
+  try:
+    with open('bans', 'r') as f:
+      return(json.load(f))
+  except:
+    print('Error with reading bans')
+    return []
+
 @bot.event
 async def on_message(message):
-    await bot.process_commands(message)
+  bans = readBans()
+  for ban in bans:
+    if ban in message.content:
+      await message.reply(content="This message uses forbidden language.")
+      await message.delete()
+      return
+  await bot.process_commands(message)
 
 @bot.event
 async def on_error(evt_type, *args, **kwargs):
