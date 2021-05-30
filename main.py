@@ -32,6 +32,27 @@ async def on_message(message):
       await message.reply(content="You are not an Imperial Senator, so your proposal is immediately rejected.")
       return
 
+def isSenator(user):
+    return 'ImperialSenator' in user.roles
+
+def isEmperor(user):
+    return 'Emperor' in user.roles
+
+async def getSenateSupportCount(reaction):
+    # Assume reaction is upvote
+    users = await reaction.users().flatten()
+    votes = filter(isSenator,users)
+    return len(votes)
+
+def getTotalSenators(reaction):
+    senators = filter(isSenator,reaction.message.channel.members)
+    return len(senators)
+
+async def getEmperorSupport(reaction):
+    users = await reaction.users().flatten()
+    votes = filter(isEmperor,users)
+    return len(votes)>0
+
 @bot.event
 async def on_reaction_add(reaction, user):
   if reaction.message.content.startswith("OFFICIAL PROPOSAL:"):
@@ -42,7 +63,12 @@ async def on_reaction_add(reaction, user):
       byteString = b'\xe2\xac\x86\xef\xb8\x8f'
       actualString = bytes(str(reaction.emoji),'utf-8')
       if actualString == byteString:
-        await reaction.message.reply(content=f"GREAT {reaction.count}")
+        # Check if there is a super majority of senators who have voted
+        # Or if emperor + simple majority
+        senatorSupportCount = await getSenateSupportCount(reaction)
+        totalSenators = getTotalSenators(reaction)
+        emperorSupport = await getEmperorSupport(reaction)
+        await reaction.message.reply(content=f"Senate support: {senatorSupportCount}\nTotal senators: {totalSenators}\nEmperor support: {emperorSupport}")
       else:
         await reaction.message.reply(content=reaction.emoji)
 
