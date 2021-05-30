@@ -2,6 +2,7 @@
 import discord
 import json
 import typing
+import logging as log
 import subprocess
 
 from discord.ext import commands
@@ -114,6 +115,7 @@ class Proposal(commands.Cog):
         if str(message.id) not in self.proposals:
             return
 
+        log.info(f'Reaction to message: {message.id} with reaction: {reaction.emoji}')
         # If reaction is None, this means that the removing the reaction caused
         # it to remove from the list of reactions
         if reaction == None:
