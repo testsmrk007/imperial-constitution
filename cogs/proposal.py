@@ -93,7 +93,7 @@ class Proposal(commands.Cog):
         self.writeProposals()
 
         await ctx.message.reply(content=f'Proposal #{ctx.message.id} has been ' +
-                'added :white_check_mark:.')
+                f'added :white_check_mark:: ban the word "{word}".')
 
     @commands.command()
     async def unban(self, ctx, *, word):
@@ -107,7 +107,7 @@ class Proposal(commands.Cog):
         self.writeProposals()
 
         await ctx.message.reply(content=f'Proposal #{ctx.message.id} has been ' +
-                'added :white_check_mark:.')
+                f'added :white_check_mark:: unban the word "{word}".')
 
     @commands.command()
     async def propose(self, ctx, proposal_url, proposal_branch):
@@ -134,7 +134,8 @@ class Proposal(commands.Cog):
         self.writeProposals()
 
         await ctx.message.reply(content=f'Proposal #{ctx.message.id} has been ' +
-                'added :white_check_mark:.')
+                'added :white_check_mark:: make amendment ' +
+                f'{proposal_url}/{proposal_branch}.')
 
     async def _load_reaction_data(self, payload):
         emoji = getEmojiName(payload.emoji)
