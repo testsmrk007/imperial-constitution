@@ -197,10 +197,12 @@ class Proposal(commands.Cog):
             if emperorSupport and ( percentSupport > 50 ):
                 await message.reply(content=f"This proposal has received {percentSupport}% support " +
                     "with support from the emperor and has passed.")
+                self.proposals.pop(str(message.id))
                 self.passProposal(self.proposals[str(message.id)],message)
             elif not emperorSupport and ( percentSupport > 66 ):
                 await message.reply(content=f"This proposal has received {percentSupport}% support " +
                     "without support from the emperor and has passed.")
+                self.proposals.pop(str(message.id))
                 self.passProposal(self.proposals[str(message.id)],message)
         else:
             return
