@@ -1,7 +1,8 @@
 #!/bin/bash
-git fetch
-git merge --ff-only origin/$1
-git push
+URL = $1
+BRANCH = $2
+git pull $URL $BRANCH
+git push origin main
 touch main.py
 source venv/bin/activate
 python main.py &

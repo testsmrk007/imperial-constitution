@@ -110,7 +110,7 @@ class Proposal(commands.Cog):
                 'added :white_check_mark:.')
 
     @commands.command()
-    async def propose(self, ctx, *, proposition):
+    async def propose(self, ctx, proposal_url, proposal_branch):
 
         # Check if authorized
         if not checkAuthorized(ctx.message.author):
@@ -123,14 +123,14 @@ class Proposal(commands.Cog):
         branches = [branch.lstrip() for branch in subprocess.check_output(['git', 'branch', '-r']).decode().split('\n')]
         print(branches)
 
-        if f'origin/{proposition}' not in branches:
+        if not proposal_url or not proposal_branch:
             await ctx.message.reply(content='The proposition presented is invalid.\n' +
                     'Please create a pull request here: https://github.com/smrk007/imperial-constitution\n' +
                     'Then, type the exact name of the branch as your proposition, like:\n\n' +
-                    '>propose your-branch-name')
+                    '>propose your-fork-repo-url your-branch-name')
             return
 
-        self.proposals[str(ctx.message.id)] = { 'type': 'amendment', 'body': proposition }
+        self.proposals[str(ctx.message.id)] = { 'type': 'amendment', 'proposal_url': proposal_url, 'proposal_branch': proposal_branch }
         self.writeProposals()
 
         await ctx.message.reply(content=f'Proposal #{ctx.message.id} has been ' +
@@ -159,8 +159,9 @@ class Proposal(commands.Cog):
 
     def passProposal(self, proposal, message):
         if proposal['type'] == 'amendment':
-            proposal_branch = self.proposals[str(message.id)]['body']
-            subprocess.call(['bash','acceptAmendment.sh',proposal_branch,'&'])
+            proposal_url = self.proposals[str(message.id)]['proposal_url']
+            proposal_branch = self.proposals[str(message.id)]['proposal_branch']
+            subprocess.call(['bash','acceptAmendment.sh',proposal_url,proposal_branch,'&'])
             exit()
         if proposal['type'] == 'ban':
             if proposal['body'] not in self.bans:
