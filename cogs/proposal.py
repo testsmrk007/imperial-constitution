@@ -49,6 +49,7 @@ class Proposal(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.readProposals()
+        self.readBans()
 
         # We cannot use on_reaction_add as it only triggers on messages that are
         # inside the internal message cache
@@ -68,14 +69,45 @@ class Proposal(commands.Cog):
         with open('proposals', 'w') as f:
             json.dump(self.proposals, f)
 
-    @commands.command()
-    async def restart(self, ctx, *, branch):
-        subprocess.call(['bash','acceptAmendment.sh',branch,'&'])
-        exit()
+    def readBans(self):
+        try:
+            with open('bans', 'r') as f:
+                self.bans = json.load(f)
+        except:
+            print('Error with reading bans')
+            self.bans = {}
+
+    def writeBans(self):
+        with open('bans', 'w') as f:
+            json.dump(self.bans, f)
 
     @commands.command()
-    async def test(self, ctx):
-        await ctx.message.reply(content="I can be updated now")
+    async def ban(self, ctx, *, word):
+        # Check if authorized
+        if not checkAuthorized(ctx.message.author):
+            await ctx.message.reply(content='You are not an Imperial senator, ' +
+                    'so your proposal is immediately rejected')
+            return
+
+        self.proposals[str(ctx.message.id)] = { 'type': 'ban', 'body': word }
+        self.writeProposals()
+
+        await ctx.message.reply(content=f'Proposal #{ctx.message.id} has been ' +
+                'added :white_check_mark:.')
+
+    @commands.command()
+    async def unban(self, ctx, *, word):
+        # Check if authorized
+        if not checkAuthorized(ctx.message.author):
+            await ctx.message.reply(content='You are not an Imperial senator, ' +
+                    'so your proposal is immediately rejected')
+            return
+
+        self.proposals[str(ctx.message.id)] = { 'type': 'unban', 'body': word }
+        self.writeProposals()
+
+        await ctx.message.reply(content=f'Proposal #{ctx.message.id} has been ' +
+                'added :white_check_mark:.')
 
     @commands.command()
     async def propose(self, ctx, *, proposition):
@@ -95,7 +127,7 @@ class Proposal(commands.Cog):
                     '>propose your-branch-name')
             return
 
-        self.proposals[str(ctx.message.id)] = { 'body': proposition }
+        self.proposals[str(ctx.message.id)] = { 'type': 'amendment', 'body': proposition }
         self.writeProposals()
 
         await ctx.message.reply(content=f'Proposal #{ctx.message.id} has been ' +
@@ -122,6 +154,19 @@ class Proposal(commands.Cog):
             return
         await self.update_reaction(*await self._load_reaction_data(payload))
 
+    def passProposal(self, proposal, message):
+        if proposal['type'] == 'amendment':
+            proposal_branch = self.proposals[str(message.id)]['body']
+            subprocess.call(['bash','acceptAmendment.sh',proposal_branch,'&'])
+            exit()
+        if proposal['type'] == 'ban':
+            if proposal['body'] not in self.bans:
+                self.bans.append(proposal['body'])
+            self.writeBans()
+        if proposal['type'] == 'unban':
+            self.bans.remove(proposal['body'])
+            self.writeBans()
+
     async def update_reaction(self, reaction, message, user):
         if str(message.id) not in self.proposals:
             return
@@ -146,17 +191,13 @@ class Proposal(commands.Cog):
 
             percentSupport = int(senatorSupportCount*100/totalSenators)
             if emperorSupport and ( percentSupport > 50 ):
-                await message.reply(content=f"This amendment has received {percentSupport}% support " +
+                await message.reply(content=f"This proposal has received {percentSupport}% support " +
                     "with support from the emperor and has passed.")
-                proposal_branch = self.proposals[str(message.id)]['body']
-                subprocess.call(['bash','acceptAmendment.sh',proposal_branch,'&'])
-                exit()
+                self.passProposal(self.proposals[str(message.id)],message)
             elif not emperorSupport and ( percentSupport > 66 ):
-                await message.reply(content=f"This amendment has receivedd {percentSupport}% support " +
+                await message.reply(content=f"This proposal has received {percentSupport}% support " +
                     "without support from the emperor and has passed.")
-                proposal_branch = self.proposals[str(message.id)]['body']
-                subprocess.call(['bash','acceptAmendment.sh',proposal_branch,'&'])
-                exit()
+                self.passProposal(self.proposals[str(message.id)],message)
         else:
             return
 
