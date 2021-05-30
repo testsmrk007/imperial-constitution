@@ -14,7 +14,7 @@ extensions = []
 
 bot = commands.Bot(command_prefix=">", intents=discord.Intents.all())
 
-def readBans(self):
+def readBans():
   try:
     with open('bans', 'r') as f:
       return(json.load(f))

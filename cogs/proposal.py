@@ -75,7 +75,7 @@ class Proposal(commands.Cog):
                 self.bans = json.load(f)
         except:
             print('Error with reading bans')
-            self.bans = {}
+            self.bans = []
 
     def writeBans(self):
         with open('bans', 'w') as f:
