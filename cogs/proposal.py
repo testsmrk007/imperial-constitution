@@ -77,7 +77,7 @@ class Proposal(commands.Cog):
         await ctx.message.reply(content="I can be updated now")
 
     @commands.command()
-    async def propose(self, ctx, proposition):
+    async def propose(self, ctx, *, proposition):
         if not checkAuthorized(ctx.message.author):
             await ctx.message.reply(content='You are not an Imperial senator, ' +
                     'so your proposal is immediately rejected')
