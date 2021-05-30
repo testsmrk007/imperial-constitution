@@ -3,12 +3,9 @@ import os
 import discord
 from discord.ext.commands import *
 from discord.ext import commands
-from dotenv import load_dotenv
 import subprocess
 import re
-
-load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
+from auth import DISCORD_TOKEN
 
 bot = commands.Bot(command_prefix="IMPERIAL")
 
@@ -49,4 +46,4 @@ async def on_reaction_add(reaction, user):
       else:
         await reaction.message.reply(content=reaction.emoji)
 
-bot.run(TOKEN)
+bot.run(DISCORD_TOKEN)
