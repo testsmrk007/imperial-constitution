@@ -79,9 +79,20 @@ class Proposal(commands.Cog):
 
     @commands.command()
     async def propose(self, ctx, *, proposition):
+
+        # Check if authorized
         if not checkAuthorized(ctx.message.author):
             await ctx.message.reply(content='You are not an Imperial senator, ' +
                     'so your proposal is immediately rejected')
+            return
+
+        # Check if proposition is valid
+        branches = subprocess.check_output('git branch -r').decode().split('\n')
+        if f'origin/{proposition}' not in branches:
+            await ctx.message.reply(content='The proposition presented is invalid.\n' +
+                    'Please create a pull request here: https://github.com/smrk007/imperial-constitution\n' +
+                    'Then, type the exact name of the branch as your proposition, like:\n\n' +
+                    '>propose your-branch-name')
             return
 
         self.proposals[str(ctx.message.id)] = { 'body': proposition }
