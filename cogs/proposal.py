@@ -68,7 +68,7 @@ class Proposal(commands.Cog):
             json.dump(self.proposals, f)
 
     @commands.command()
-    async def restart(self, ctx, branch):
+    async def restart(self, ctx, *, branch):
         subprocess.call(['bash','acceptAmendment.sh',branch,'&'])
         exit()
 
