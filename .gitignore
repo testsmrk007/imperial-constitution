@@ -132,3 +132,4 @@ dmypy.json
 auth.py
 *.sw?
 proposals
+bans
