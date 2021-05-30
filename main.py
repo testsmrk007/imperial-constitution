@@ -21,7 +21,7 @@ async def on_message(message):
       
   test1_search = re.search('TEST1',message.content)
   if test1_search:
-    await message.reply(content="I can be updated now")
+    await message.reply(content="I can be updated never")
     return
 
   if message.content.startswith("OFFICIAL PROPOSAL:"):
