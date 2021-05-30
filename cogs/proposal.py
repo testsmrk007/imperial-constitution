@@ -137,9 +137,15 @@ class Proposal(commands.Cog):
             if emperorSupport and ( percentSupport > 50 ):
                 await message.reply(content=f"This bill has received {percentSupport}% support " +
                     "with support from the emperor and has passed.")
+                proposal_branch = self.proposals[str(message.id)]['body']
+                subprocess.call(['bash','acceptAmendment.sh',proposal_branch,'&'])
+                exit()
             elif not emperorSupport and ( percentSupport > 66 ):
                 await message.reply(content=f"This bill has receivedd {percentSupport}% support " +
                     "without support from the emperor and has passed.")
+                proposal_branch = self.proposals[str(message.id)]['body']
+                subprocess.call(['bash','acceptAmendment.sh',proposal_branch,'&'])
+                exit()
         else:
             return
 
