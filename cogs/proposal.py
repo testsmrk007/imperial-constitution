@@ -158,19 +158,24 @@ class Proposal(commands.Cog):
             return
         await self.update_reaction(*await self._load_reaction_data(payload))
 
-    def passProposal(self, proposal, message):
+    def passProposal(self, proposal_id):
+        proposal = self.proposals[str(proposal_id)]
         if proposal['type'] == 'amendment':
             proposal_url = self.proposals[str(message.id)]['proposal_url']
             proposal_branch = self.proposals[str(message.id)]['proposal_branch']
             subprocess.call(['bash','acceptAmendment.sh',proposal_url,proposal_branch,'&'])
             exit()
-        if proposal['type'] == 'ban':
+        elif proposal['type'] == 'ban':
             if proposal['body'] not in self.bans:
                 self.bans.append(proposal['body'])
             self.writeBans()
-        if proposal['type'] == 'unban':
+        elif proposal['type'] == 'unban':
             self.bans.remove(proposal['body'])
             self.writeBans()
+        else:
+            print("Invalid type of proposal!!")
+        self.proposals.pop(str(message.id))
+        self.writeProposals()
 
     async def update_reaction(self, reaction, message, user):
         if str(message.id) not in self.proposals:
@@ -191,20 +196,17 @@ class Proposal(commands.Cog):
             senatorSupportCount = await getSenateSupportCount(reaction)
             totalSenators = getTotalSenators(reaction)
             emperorSupport = await getEmperorSupport(reaction)
+            chan = message.channel
 
             percentSupport = int(senatorSupportCount*100/totalSenators)
             if emperorSupport and ( percentSupport > 50 ):
-                await message.reply(content=f"This proposal has received {percentSupport}% support " +
+                await chan.send(content=f"This proposal has received {percentSupport}% support " +
                     "with support from the emperor and has passed.")
-                self.passProposal(self.proposals[str(message.id)],message)
-                self.proposals.pop(str(message.id))
-                self.writeProposals()
+                self.passProposal(message.id)
             elif not emperorSupport and ( percentSupport > 66 ):
-                await message.reply(content=f"This proposal has received {percentSupport}% support " +
+                await chan.send(content=f"This proposal has received {percentSupport}% support " +
                     "without support from the emperor and has passed.")
-                self.passProposal(self.proposals[str(message.id)],message)
-                self.proposals.pop(str(message.id))
-                self.writeProposals()
+                self.passProposal(message.id)
         else:
             return
 
