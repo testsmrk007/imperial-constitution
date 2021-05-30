@@ -40,8 +40,10 @@ def isEmperor(user):
 
 async def getSenateSupportCount(reaction):
     # Assume reaction is upvote
+    senators_ids = set([member.id for member in filter(isSenator,reaction.message.channel.members)])
     users = await reaction.users().flatten()
-    votes = [*filter(isSenator,users)]
+    user_ids = set([user.id for user in users])
+    senate_votes = senators_ids & user_ids
     return len(votes)
 
 def getTotalSenators(reaction):
