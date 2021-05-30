@@ -87,7 +87,9 @@ class Proposal(commands.Cog):
             return
 
         # Check if proposition is valid
+        subprocess.call(['git','fetch'])
         branches = subprocess.check_output(['git', 'branch', '-r']).decode().split('\n')
+
         if f'origin/{proposition}' not in branches:
             await ctx.message.reply(content='The proposition presented is invalid.\n' +
                     'Please create a pull request here: https://github.com/smrk007/imperial-constitution\n' +
