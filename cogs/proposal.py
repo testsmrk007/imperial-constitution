@@ -115,7 +115,6 @@ class Proposal(commands.Cog):
         if str(message.id) not in self.proposals:
             return
 
-        log.info(f'Reaction to message: {message.id} with reaction: {reaction.emoji}')
         # If reaction is None, this means that the removing the reaction caused
         # it to remove from the list of reactions
         if reaction == None:
@@ -133,9 +132,16 @@ class Proposal(commands.Cog):
             senatorSupportCount = await getSenateSupportCount(reaction)
             totalSenators = getTotalSenators(reaction)
             emperorSupport = await getEmperorSupport(reaction)
-            await message.reply(content=f"Senate support: {senatorSupportCount}\nTotal senators: {totalSenators}\nEmperor support: {emperorSupport}")
+
+            percentSupport = int(senatorSupportCount*100/totalSenators)
+            if emperorSupport and ( percentSupport > 50 ):
+                await message.reply(content=f"This bill has received {percentSupport}% support " +
+                    "with support from the emperor and has passed.")
+            elif not emperorSupport and ( percentSupport > 66 ):
+                await message.reply(content=f"This bill has receivedd {percentSupport}% support " +
+                    "without support from the emperor and has passed.")
         else:
-            await reaction.message.reply(content=reaction.emoji)
+            return
 
 def setup(bot):
     bot.add_cog(Proposal(bot))
