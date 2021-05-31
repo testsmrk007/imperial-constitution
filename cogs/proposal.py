@@ -94,7 +94,7 @@ class ProposalDB:
         }
         self._write_bans()
 
-    def get_proposal(self, ban_id: int):
+    def get_bans(self, ban_id: int):
         return self.bans[str(ban_id)]
 
     def has_ban(self, ban_id: int):
