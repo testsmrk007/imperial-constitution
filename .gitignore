@@ -133,3 +133,5 @@ auth.py
 *.sw?
 proposals
 bans
+
+logs.txt

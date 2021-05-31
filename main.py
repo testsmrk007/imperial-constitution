@@ -44,6 +44,7 @@ async def check_bans(message):
 async def on_error(evt_type, *args, **kwargs):
     if evt_type == 'on_message':
         await args[0].reply('An error has occurred... :disappointed:')
+        await args[0].reply(traceback.format_exc())
     log.error(f'Ignoring exception at {evt_type}')
     log.error(traceback.format_exc())
 
