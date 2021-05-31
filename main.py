@@ -37,7 +37,7 @@ async def check_bans(message):
     if ban['word'].lower() in message.content.lower():
       print('Banned: ' + message.content)
       await message.reply(content="This message uses forbidden language.")
-      await message.delete()
+      await message.edit(content=message.content.lower.replace(ban['word'].lower(),'<REDACTED>'))
       return
 
 @bot.event
