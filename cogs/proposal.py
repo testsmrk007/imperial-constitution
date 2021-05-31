@@ -94,7 +94,7 @@ class ProposalDB:
         }
         self._write_bans()
 
-    def get_bans(self, ban_id: int):
+    def get_ban(self, ban_id: int):
         return self.bans[str(ban_id)]
 
     def has_ban(self, ban_id: int):
@@ -144,6 +144,8 @@ class Proposal(commands.Cog):
             return f'ban word `{proposal["word"]}` (id={proposal_id})'
         elif proposal['type'] == 'unban':
             ban_id = proposal['ban_id']
+            if not self.db.has_ban(ban_id):
+                return 'unban ???'
             word = self.db.get_ban(ban_id)['word']
             return f'unban word {word} (id={ban_id})'
         else:
