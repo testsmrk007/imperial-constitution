@@ -94,6 +94,9 @@ class ProposalDB:
         }
         self._write_bans()
 
+    def get_proposal(self, ban_id: int):
+        return self.bans[str(ban_id)]
+
     def has_ban(self, ban_id: int):
         return str(ban_id) in self.bans
 
@@ -138,10 +141,11 @@ class Proposal(commands.Cog):
         if proposal['type'] == 'amendment':
             return f'amendment at {proposal["proposal_url"]}/tree/{proposal["proposal_branch"]}'
         elif proposal['type'] == 'ban':
-            return f'ban word `{proposal["word"]}`, id={proposal_id}'
+            return f'ban word `{proposal["word"]}` (id={proposal_id})'
         elif proposal['type'] == 'unban':
-            word = proposal['ban_id']
-            return f'unban word {word}, id={proposal["ban_id"]}'
+            ban_id = proposal['ban_id']
+            word = self.db.get_ban(ban_id)['word']
+            return f'unban word {word} (id={ban_id})'
         else:
             return 'Unknown proposal'
 
