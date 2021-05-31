@@ -300,6 +300,8 @@ class Proposal(commands.Cog):
             elif not emperorSupport and ( percentSupport > 66 ):
                 msg += f"This proposal has received {percentSupport}% support "
                 msg += "without support from the emperor and has passed."
+            else:
+                return
             await chan.send(content=msg)
             self.pass_proposal(message.id)
         else:
